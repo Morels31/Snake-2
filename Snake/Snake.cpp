@@ -41,7 +41,7 @@ SDL_Window* initWindow(void) {
         printf("Video Initialization Error: %s", SDL_GetError());
         return NULL;
     }
-    window = SDL_CreateWindow("Snake", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, NPIXEL*NCOL, NPIXEL*NROW, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("Snake", NPIXEL*NCOL, NPIXEL*NROW, SDL_WINDOW_OPENGL);
     if (window == NULL) {
         printf("Window Creation Error: %s", SDL_GetError());
         return NULL;
@@ -50,7 +50,7 @@ SDL_Window* initWindow(void) {
 }
 
 void color(struct snake *snk, int r, int c, Uint32 color) {
-    if(SDL_FillRect(snk->surf, &snk->rectGrid[r][c], color))printf("Coloring Error on row: %d and col: %d",r,c);
+    if(!SDL_FillSurfaceRect(snk->surf, &snk->rectGrid[r][c], color)) printf("Coloring Error on row: %d and col: %d\n",r,c);
 }
 
 void blank(struct snake* snk) {
@@ -85,9 +85,9 @@ void initSnake(struct snake* snk, SDL_Surface *surf) {
     snk->tail[0] = 2;                                                   //inizializza la coordinata riga della coda
     snk->tail[1] = 2;                                                   //inizializza la coordinata colonna della coda
     snk->len = 3;                                                       //inizializza la lunghezza del serpente a 3
-    snk->backC = SDL_MapRGB(surf->format, 50, 50, 50);
-    snk->snakeC = SDL_MapRGB(surf->format, 255, 255, 255);
-    snk->appleC = SDL_MapRGB(surf->format, 255, 0, 0);
+    snk->backC = SDL_MapRGB(SDL_GetPixelFormatDetails(surf->format), NULL, 50, 50, 50);
+    snk->snakeC = SDL_MapRGB(SDL_GetPixelFormatDetails(surf->format), NULL, 255, 255, 255);
+    snk->appleC = SDL_MapRGB(SDL_GetPixelFormatDetails(surf->format), NULL, 255, 0, 0);
     snk->surf = surf;
     for (int i = 0; i < 3; i++) {                                       //for(i=0;i<3;i++)
         snk->grid[2][2 + i] = 1;                                            //piazza i primi blocchi del serpente
@@ -111,30 +111,30 @@ void newApple(struct snake* snk) {                                      //Genera
 }
 
 void takeInput(struct snake* snk, SDL_Event *ev) {
-    switch (ev->key.keysym.sym) {
+    switch (ev->key.key) {
         case(SDLK_LEFT):
-        case(SDLK_a):
+        case(SDLK_A):
             if (snk->lastInput == LEFT)break;
             //puts("Sinistra");
             appendRight(snk->nextMoves, LEFT);
             snk->lastInput = LEFT;
             break;
         case(SDLK_DOWN):
-        case(SDLK_s):
+        case(SDLK_S):
             if (snk->lastInput == DOWN)break;
             //puts("Giu");
             appendRight(snk->nextMoves, DOWN);
             snk->lastInput = DOWN;
             break;
         case(SDLK_RIGHT):
-        case(SDLK_d):
+        case(SDLK_D):
             if (snk->lastInput == RIGHT)break;
             //puts("Destra");
             appendRight(snk->nextMoves, RIGHT);
             snk->lastInput = RIGHT;
             break;
         case(SDLK_UP):
-        case(SDLK_w):
+        case(SDLK_W):
             if (snk->lastInput == UP)break;
             //puts("Su");
             appendRight(snk->nextMoves, UP);
@@ -271,10 +271,10 @@ int main(int argc, char* argv[]) {
     Sleep(snk->tick);
     while (running) {
         while (SDL_PollEvent(&ev) != 0) {
-            if (ev.type == SDL_KEYDOWN) {
+            if (ev.type == SDL_EVENT_KEY_DOWN) {
                 takeInput(snk, &ev);
             }
-            else if (ev.type == SDL_QUIT) running = 0;
+            else if (ev.type == SDL_EVENT_QUIT) running = 0;
         }
         
         if (move(snk)) running = 0;
