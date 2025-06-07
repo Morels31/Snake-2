@@ -9,6 +9,9 @@
 #define HSTEPTICK 2                                 //Numero di millisecondi che si sottraggono inizialmente da tick ad ogni mela mangiata
 #define LSTEPTICK 1                                 //Numero di millisecondi che si sottraggono successivamente da tick ad ogni mela mangiata
 
+#define HIGHSCORE_FILE "HS.txt"
+#define HS_BUFF_SIZE 10
+
 
 
 enum direzioni {                                    //enum per assegnare alle direzioni un numero
@@ -224,12 +227,13 @@ char move(struct snake* snk) {                       //Muove nella prossima posi
 
 char saveHS(int s) {
     FILE *f = NULL;
-    void *buff=calloc(10, sizeof(char));
-    if ((fopen_s(&f, "HS.txt", "r"))!=0) {
+    void *buff = calloc(HS_BUFF_SIZE, sizeof(char));
+
+    if (!(f = fopen(HIGHSCORE_FILE, "r"))){
         puts("Error opening in reading mode file");
         return -1;
     }
-    if (fread_s(buff,10, 1, 10, f)<=0) {
+    if (fread(buff, sizeof(char), HS_BUFF_SIZE, f)<=0) {
         puts("Error reading file");
         return -1;
     }
@@ -240,11 +244,11 @@ char saveHS(int s) {
         //buff = (void*)std::to_string(42);  //-------------------------------------------------------------------aaaaaaaaaaaaaaaaaa devi fare una funzione incasina decasina
         fclose(f);
         f = NULL;
-        if (fopen_s(&f,"HS.txt", "w") != 0) {
+        if (!(f = fopen(HIGHSCORE_FILE, "w"))){
             puts("Error opening file in writing mode");
             return -1;
         }
-        if (fwrite(buff, 1, 10, f) <= 0) {
+        if (fwrite(buff, 1, HS_BUFF_SIZE, f) <= 0) {
             puts("Error writing new highscore");
             return -1;
         }
@@ -268,7 +272,7 @@ int main(int argc, char* argv[]) {
 
     SDL_Event ev;
     char running=1;
-    Sleep(snk->tick);
+    SDL_Delay(snk->tick);
     while (running) {
         while (SDL_PollEvent(&ev) != 0) {
             if (ev.type == SDL_EVENT_KEY_DOWN) {
@@ -279,7 +283,7 @@ int main(int argc, char* argv[]) {
         
         if (move(snk)) running = 0;
         SDL_UpdateWindowSurface(win);
-        Sleep(snk->tick);
+        SDL_Delay(snk->tick);
     }
 
     char hs = saveHS(snk->len - 3);
@@ -287,7 +291,7 @@ int main(int argc, char* argv[]) {
     //if (hs == 1) puts("---\tNew Highscore\t---");
     //else if (hs == -1) puts("Error setting new highscore");
     printf("\nScore:\t%d\nTick\t%d\n", snk->len - 3, snk->tick);             //stampa il punteggio
-    Sleep(3000);
+    SDL_Delay(3000);
     SDL_DestroyWindow(win);
     SDL_Quit();
     return 0;

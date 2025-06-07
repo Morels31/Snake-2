@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include <windows.h>
 #include <errno.h> 
 #include <cstdlib>
 #include <SDL.h>
