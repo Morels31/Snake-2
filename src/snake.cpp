@@ -1,4 +1,4 @@
-#include "Snake.h"                                  //Header con tutte le include del caso
+#include "snake.h"                                  //Header con tutte le include del caso
 
 #define NROW 21                                     //Numero delle Righe
 #define NCOL 30                                     //Numero delle Colonne
