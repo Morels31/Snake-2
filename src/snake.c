@@ -10,7 +10,7 @@
 #define LSTEPTICK 1                                 //Numero di millisecondi che si sottraggono successivamente da tick ad ogni mela mangiata
 
 #define HIGHSCORE_FILE "HS.txt"
-#define HS_BUFF_SIZE 10
+#define HS_BUFF_SIZE 20
 
 
 
@@ -227,35 +227,40 @@ char move(struct snake* snk) {                       //Muove nella prossima posi
 
 char saveHS(int s) {
     FILE *f = NULL;
-    void *buff = calloc(HS_BUFF_SIZE, sizeof(char));
+    size_t readed = 0;
+    char buff[HS_BUFF_SIZE];
 
-    if (!(f = fopen(HIGHSCORE_FILE, "r"))){
-        puts("Error opening in reading mode file");
-        return -1;
-    }
-    if (fread(buff, sizeof(char), HS_BUFF_SIZE, f)<=0) {
-        puts("Error reading file");
-        return -1;
-    }
-    //printf("%s\n", buff);
-    int hs = atoi((char*)buff);
-    if (hs >= s)return 0;
-    else{
-        //buff = (void*)std::to_string(42);  //-------------------------------------------------------------------aaaaaaaaaaaaaaaaaa devi fare una funzione incasina decasina
+    if (f = fopen(HIGHSCORE_FILE, "r")){
+        if ((readed = fread(buff, sizeof(char), HS_BUFF_SIZE, f)) < HS_BUFF_SIZE) {
+            if (ferror(f)){
+                puts("Error reading file");
+                fclose(f);
+                return -1;
+            } 
+        }
         fclose(f);
+    }
+
+    buff[readed] = '\0';
+    int hs = atoi((char*)buff);
+    printf("'%s' -> '%d'\n", buff, hs);
+
+    if (hs >= s) return 0;
+
+    else{
         f = NULL;
         if (!(f = fopen(HIGHSCORE_FILE, "w"))){
             puts("Error opening file in writing mode");
             return -1;
         }
-        if (fwrite(buff, 1, HS_BUFF_SIZE, f) <= 0) {
+        if (fprintf(f, "%d", s) <= 0){
             puts("Error writing new highscore");
+            fclose(f);
             return -1;
         }
         fclose(f);
         return 1;
     }
-
 }
 
 int main(int argc, char* argv[]) {
