@@ -5,5 +5,5 @@ My second version of the snake game, written in 2021 initially using visual stud
 
 
 ## TODO
-- [ ] Remove windows dependencies
+- [x] Remove windows dependencies
 - [ ] Port it to vanilla c
