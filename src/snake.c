@@ -243,7 +243,7 @@ char saveHS(int s) {
 
     buff[readed] = '\0';
     int hs = atoi((char*)buff);
-    printf("'%s' -> '%d'\n", buff, hs);
+    //printf("'%s' -> '%d'\n", buff, hs);
 
     if (hs >= s) return 0;
 
