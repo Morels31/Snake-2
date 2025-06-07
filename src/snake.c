@@ -73,7 +73,7 @@ void initGrid(struct snake *snk) {                                      //inizia
     }
     for (int r = 0; r < NROW; r++) {
         for (int c = 0; c < NCOL; c++) {
-            snk->rectGrid[r][c] = { c * NPIXEL, r * NPIXEL, NPIXEL, NPIXEL };
+            snk->rectGrid[r][c] = (SDL_Rect) { c * NPIXEL, r * NPIXEL, NPIXEL, NPIXEL };
         }
     }
 }
